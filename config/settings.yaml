@@ -1,0 +1,31 @@
+# --- Ollama / model ---
+ollama_host: "http://localhost:11434"
+model_tag: "gemma2:27b"          # change to match your locally pulled tag
+temperature: 0
+
+# --- Concurrency ---
+# Start low and raise while watching GPU utilization / per-request latency.
+# More workers than your GPU can actually batch just adds queuing delay.
+max_concurrency_resolve: 4        # Phase 1: version resolution fan-out
+max_concurrency_bump: 4           # Phase 2: file-edit agent fan-out
+
+# --- Repos ---
+repo_root: "./workspaces"         # ephemeral git worktrees created here
+canonical_repo_root: "./repos"    # your real, already-cloned 44 repos live here
+repos_list_file: "./config/repos.txt"
+
+# --- Step 1 ---
+# *** cl_check_script_path: "./"   # your existing, already-automated script
+
+# --- Version bump conventions ---
+# *** version_bump_commit_grep: "Bump version"   # adjust to your team's real convention
+
+# --- VCS push target ---
+push_ref_template: "refs/for/{branch}"     # Gerrit-style; adjust for Perforce/etc.
+
+# --- Checkpointing ---
+checkpoint_db_path: "./state_store/checkpoints.sqlite"
+
+# --- Retry ---
+max_tool_retries: 3
+max_consecutive_tool_errors: 3

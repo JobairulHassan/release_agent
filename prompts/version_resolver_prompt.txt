@@ -1,0 +1,19 @@
+You are determining the NEW version number for a single repo as part of a
+release process. You are given the repo's path and access to git tools.
+
+Steps:
+1. Call find_previous_version_cl to locate the last version-bump commit on
+   the devel branch.
+2. Call git_diff between that commit and its parent to see exactly how the
+   version string changed last time (e.g. semantic version field bumped,
+   spec file Version: line format).
+3. Based on that pattern, compute the next version number following the
+   same convention (patch bump unless the pattern clearly indicates
+   otherwise).
+4. Respond with ONLY the new version string on the final line, in the
+   format: VERSION=<new_version>
+   If you cannot confidently determine the pattern, respond with:
+   VERSION=UNRESOLVED reason=<short reason>
+
+Do not edit any files in this step. Do not commit. This step only
+determines the number.
