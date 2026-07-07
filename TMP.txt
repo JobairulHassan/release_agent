@@ -1,0 +1,41 @@
+release_agent/
+├── graph/
+│   ├── __init__.py
+│   ├── state.py                    # shared state schema: changed_repos, version_map, drafts, approvals, errors
+│   ├── build_graph.py                # StateGraph definition, Send-based fan-out/fan-in, checkpointer wiring
+│   └── nodes/
+│       ├── step1_node.py              # runs your step-1 script, populates changed_repos
+│       ├── version_resolve_node.py     # Phase 1 per-repo, fanned out via Send
+│       ├── version_bump_node.py         # Phase 2 per-repo ReAct agent, given frozen version_map
+│       ├── human_gate_node.py            # interrupt() — pauses for batch approval
+│       └── push_node.py                   # pushes only approved repos
+│
+├── llm/
+│   ├── __init__.py
+│   └── ollama_client.py             # ChatOllama(model="gemma2:27b", ...), .bind_tools(), fallback JSON-mode wrapper
+│
+├── tools/
+│   ├── __init__.py
+│   ├── git_tools.py                  # git_log, git_diff, git_diff_working_tree, git_commit
+│   ├── worktree_tools.py              # git worktree add/remove per repo per run
+│   ├── fs_tools.py                     # read_file, write_file
+│   ├── vcs_review_tools.py              # git_push_for_review
+│   └── registry.py                       # LangChain @tool-decorated versions of the above
+│
+├── prompts/
+│   ├── version_resolver_prompt.txt
+│   └── version_bump_prompt.txt
+│
+├── config/
+│   ├── settings.yaml                  # ollama_host, model_tag, num_parallel, max_concurrency, repo_root
+│   └── repos.txt                       # your 44 repo@hash list
+│
+├── state_store/
+│   ├── checkpoints.sqlite              # LangGraph checkpointer — rerun-safety, not multi-day persistence
+│   └── transcripts/                      # per-repo run logs for audit/debugging
+│
+├── workspaces/                             # ephemeral git worktrees (gitignored)
+│
+├── run.py                                    # builds graph, invokes, handles interrupt, prints approval prompt, resumes to push
+├── requirements.txt                            # langgraph, langchain-ollama, langchain-core
+└── README.md
